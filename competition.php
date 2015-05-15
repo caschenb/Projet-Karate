@@ -1,6 +1,6 @@
 <HTML>
   <head>
-    <title>Ceci est le titre de la page</title>
+    <title>Competition</title>
 	
 	<?php
 	mb_internal_encoding("UTF-8");
@@ -44,7 +44,7 @@
             <table border="0" cellspacing="3" cellpadding="0">
 				<tr><td>formulaire création</td></tr>
 			</table>
-				<form method = "GET" action="competition_rech_res.php">
+				<form method = "GET" action="competition_ajout_res.php">
 				<p><label for="nom">Nom :</label><br />
 				<input type = "text" name = "nom" id="nom" required></p>
 				<p><label for="date">Date :</label><br />
@@ -52,7 +52,7 @@
 				<p><label for="lieu">Lieu :</label><br />
 				<input type = "text" name = "lieu" id="lieu"></p>
 				<p><label for="site">Site Web :</label><br />
-				<input type = "text" name = "site" id="site"></p>
+				<input type = "text" name = "site" id="site" required></p> <!--s'il est nul il n'est plus unique.... dommage pour la contrainte-->
 				<p><label for="mail">Mail :</label><br />
 				<input type = "text" name = "mail" id="mail"></p>
 				<p><label for="materiau">Nom Du Materiau :</label><br />
@@ -60,10 +60,10 @@
 				<p>
 				<label for="type">De quel type de Compétition s'agit-il ?</label><br />
 				<select name="type" id="type" required>
-					<option value="kata">Kata</option>
-				   <option value="kumite">Kumite</option>
-				   <option value="tameshiwari">Tameshi Wari</option>
-				   <option value="mixte">Mixte</option>
+					<option value="CompetitionKata">Kata</option>
+				   <option value="CompetitionKumite">Kumite</option>
+				   <option value="CompetitionTameshiWari">Tameshi Wari</option>
+				   <option value="CompetitionMixte">Mixte</option>
 				</select>
 				</p>
 				<input type = "submit">
@@ -72,11 +72,11 @@
           </div>
           <div id="2" style="display:none">
             <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire modification</td></tr></table>
-				<form method = "GET" action="competition_rech_res.php">
+				<form method = "GET" action="competition_modif.php">
 				<?php
 				echo '<p> <label for="type">Veuillez choisir la competition que vous voulez modifier : </label><br />
 				<select name="type" id="type"></p>';
-				$querystring = "SELECT nom, date 
+				$querystring = "SELECT nom, date
 								FROM projet_karate.competition";
 				//créer la requête qui permet de récupérer les compétitions déjà créées
 				$query = pg_query($idConnexion, $querystring);
@@ -85,34 +85,12 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value='i'>$result[nom]</option>";
+					echo"<option value=$result[nom]>$result[nom]</option>";
 				}				
+				
 				echo'</select>
 				</p>'
 				?>
-				<p> Remplissez les champs que vous souhaitez modifier </p>
-				<p><label for="nom">Nom :</label><br />
-				<input type = "text" name = "nom" id="nom"></p>
-				<p><label for="date">Date :</label><br />
-				<input type = "text" name = "date" id="date"></p>
-				<p><label for="lieu">Lieu :</label><br />
-				<input type = "text" name = "lieu" id="lieu"></p>
-				<p><label for="site">Site Web :</label><br />
-				<input type = "text" name = "site" id="site"></p>
-				<p><label for="mail">Mail :</label><br />
-				<input type = "text" name = "mail" id="mail"></p>
-				<p><label for="materiau">Nom Du Materiau :</label><br />
-				<input type = "text" name = "materiau" id="materiau"></p>
-				<p>
-				<label for="type">De quel type de Compétition s'agit-il ?</label><br />
-				<select name="type" id="type">
-				   <option value="0" selected>Aucune modification</option>
-					<option value="kata">Kata</option>
-				   <option value="kumite">Kumite</option>
-				   <option value="tameshiwari">Tameshi Wari</option>
-				   <option value="mixte">Mixte</option>
-				</select>
-				</p>
 				<input type = "submit">
 				</form>
 		  </div>
@@ -131,7 +109,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo'<option value="i">$result[nom]</option>';
+					echo"<option value='i'>$result[nom]</option>";
 				}				
 				echo'</select>
 				</p>'
@@ -154,7 +132,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo'<option value="i">$result[nom]</option>';
+					echo"<option value='i'>$result[nom]</option>";
 				}				
 				echo'</select>
 				</p>'
