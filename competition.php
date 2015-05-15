@@ -85,7 +85,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo'<option value="i">$result[nom]</option>';
+					echo"<option value='i'>$result[nom]</option>";
 				}				
 				echo'</select>
 				</p>'
