@@ -1,6 +1,7 @@
 <HTML>
   <head>
     <title>Competition</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	
 	<?php
 	mb_internal_encoding("UTF-8");
@@ -121,7 +122,7 @@
             <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire rechercher</td></tr></table>
 				<form method = "GET" action="competition_rech_res.php">
 				<?php
-				echo '<p> <label for="type">Veuillez choisir la competition que vous souhaitez consulter : </label><br />
+				echo '<p> <label for="nomCompet">Veuillez choisir la competition que vous souhaitez consulter : </label><br />
 				<select name="type" id="type"></p>';
 				$querystring = "SELECT nom, date 
 								FROM projet_karate.competition";
@@ -132,7 +133,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value='i'>$result[nom]</option>";
+					echo"<option value=$result[nom]>$result[nom]</option>";
 				}				
 				echo'</select>
 				</p>'
