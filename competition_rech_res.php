@@ -24,7 +24,7 @@ include ("ajout.php");
 $idConnexion=fconnect();
 
 $nom = $_GET['type']; 
-$nom = "Thecompet"; //à enlever lorsque competition finie
+//$nom = "Thecompet"; //à enlever lorsque competition finie
 
 $querystring = "SELECT * FROM projet_karate.competition WHERE  projet_karate.competition.nom='$nom'";
 		$query = pg_query($idConnexion, $querystring);
@@ -60,7 +60,7 @@ $querystring = "SELECT P.nom, P.prenom
 <?php
 	echo "<br>";
 	$nom = $_GET['type'];
-	$nom = "Competition1"; //à enlever aussi
+	//$nom = "Competition1"; //à enlever aussi
 	$req_date= "SELECT C.Date AS date
 				FROM Projet_Karate.Competition C
 				WHERE C.Nom= '$nom';"; //On récupère la date du match
