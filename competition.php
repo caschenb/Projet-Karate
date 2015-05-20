@@ -56,17 +56,25 @@
 				<input type = "text" name = "site" id="site" required></p> <!--s'il est nul il n'est plus unique.... dommage pour la contrainte-->
 				<p><label for="mail">Mail :</label><br />
 				<input type = "text" name = "mail" id="mail"></p>
-				<p><label for="materiau">Nom Du Materiau :</label><br />
-				<input type = "text" name = "materiau" id="materiau"></p>
+				<!--<p><label for="materiau">Nom Du Materiau :</label><br />
+				<input type = "text" name = "materiau" id="materiau"></p> !-->
 				<p>
 				<label for="type">De quel type de Compétition s'agit-il ?</label><br />
-				<select name="type" id="type" required>
+				<select name="type" onchange="catsel(this)" id="type" required>
 					<option value="CompetitionKata">Kata</option>
 				   <option value="CompetitionKumite">Kumite</option>
 				   <option value="CompetitionTameshiWari">Tameshi Wari</option>
 				   <option value="CompetitionMixte">Mixte</option>
 				</select>
 				</p>
+				<div id="CompetitionTameshiWari" style="display:none">
+					<p>Nom Du Materiau :<br />
+					<input type = 'text' name = 'materiau'></p>
+				</div>
+				<div id="CompetitionMixte" style="display:none">
+					<p>Nom Du Materiau :<br />
+					<input type = 'text' name = 'materiau' ></p>
+				</div>
 				<input type = "submit">
 				</form>
 			
