@@ -1,8 +1,14 @@
 <HTML>
-<head>
-    <title>Consultation compétition </title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+  <head>
+    <title>Competition</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	
+	<?php
+	mb_internal_encoding("UTF-8");
+	include("connect.php");
+	$idConnexion=fconnect();
+	?>
+	
     <script type="text/javascript">
       function catsel(sel) {
         //if (sel.value=="-1" ) return;
@@ -15,166 +21,128 @@
         if (cat) cat.style.display="block";
       }
     </script>
+  </head>
+  <body>
 
-</head>
-<?php
-mb_internal_encoding("UTF-8");
-include("connect.php");
-include ("ajout.php");
-$idConnexion=fconnect();
-
-$nom = $_GET['type']; 
-$nom = "Thecompet"; //à enlever lorsque competition finie
-
-$querystring = "SELECT * FROM projet_karate.competition WHERE  projet_karate.competition.nom='$nom'";
-		$query = pg_query($idConnexion, $querystring);
-		$result=pg_fetch_array($query);
-?>
-	<h1>Information sur la compétition
-	<?php
-		echo" $result[nom] </h1> 
-
-	<br>
-
-		Date : $result[date] <br>
-		Lieu : $result[lieu]<br>
-		Site web : $result[siteweb]<br>
-		Mail : $result[mail]<br>
-		Matériau : $result[nommateriau]<br>
-		Type : $result[type] <br><br>";
-	?>
-<a href= "competition_inscr.php"> S'inscrire à cette compétition </a> <br>
-
-<h2>Liste des participants</h2>
-<!--Requete pour avoir la liste des participants
-<?php
-$querystring = "SELECT P.nom, P.prenom 
-				FROM projet_karate.pratiquant P,projet_karate.competition C, projet_karate.match M 
-				WHERE  M.nomcompetition='$nom' AND M.datecompetition=$result[date] AND "; //manque lien pratiquant à competition ou à match.
-
-
-?>
--->
-<br>
-
-<?php
-	echo "<br>";
-	$nom = $_GET['type'];
-	$nom = "Competition1"; //à enlever aussi
-	$req_date= "SELECT C.Date AS date
-				FROM Projet_Karate.Competition C
-				WHERE C.Nom= '$nom';"; //On récupère la date du match
-	$query=pg_query($idConnexion,$req_date);
-	$res=pg_fetch_array($query);
-	$date= strtotime("$res[date]");
-	$date_today = strtotime(date('Y-m-d H:i:s')); //On récupère la date d'aujourd'hui et on la convertie en nombre pour faciliter la comparaison
-	if($date<$date_today){ //On compare les 2 dates et on affiche les classements seulement si la date est passée.
-		echo "<h2>Liste des matchs</h2>";
-
-echo"<table border='1'>";
-		echo"<tr>";
-		echo"<td width='100pt'><b>Numéro</b></td>";
-		echo"<td width='100pt'><b>Score1</b></td>";
-		echo"<td width='100pt'><b>Score2</b></td>";
-		echo"<td width='100pt'><b>Type</b></td>";
-		echo"<td width='100pt'><b>Kata</b></td>";
-		echo"</tr>";
-
-	$querystring = "SELECT M.numeromatch AS num, M.score1 AS s1,M.score2 AS s2,M.type AS type,M.kata AS kata
-					FROM projet_karate.match M 
-					WHERE  M.nomcompetition='$nom';"; 
-	$query = pg_query($idConnexion, $querystring);
-	$i=0;
-	while($result = pg_fetch_array($query))
-		{
-			echo "<tr>";
-			echo "<td> $Result[num] </td>";
-			echo "<td> $Result[s1] </td>";
-			echo "<td> $Result[s2] </td>";
-			echo "<td> $Result[type] </td>";
-			echo "<td> $Result[kata] </td>";
-			echo "</tr>";
-		}
-
-echo"</table>";
-
-
-		echo "<h2>Classement</h2>";
-
-	}
-	else{
-?>
-		<table>
+    <table>
       <tr>
         <td>
-        Choisissez :
+        Faites un choix :
         </td>
         <td>
           <select name="choice" onchange="catsel(this)">
           <!--<option value="-1">None</option>!-->
-            <option value="1">Inscription</option>
-            <option value="2">Description</option>
+            <option value="1">Créer</option>
+            <option value="2">Modifier</option>
+            <option value="3">Supprimer</option>
+            <option value="4">Rechercher</option>
           </select>
         </td>
       </tr>
       <tr>
         <td colspan="2">
           <div id="1" style="display:block">
-				<form method = "GET" action="competition_insert_res.php">
-				<p><label for="club">Choisissez le club </label><br />
-				<select name="club" onchange="catsel(this)" id="club" required>
-
-				<?php
-					$querystring = "SELECT C.nom AS nom, C.adresse AS adresse
-					FROM projet_karate.club C
-					ORDER BY C.nom;"; 
-					$query = pg_query($idConnexion, $querystring);
-					while($result = pg_fetch_array($query))
-					{
-						echo"<option value='$result[adresse]'>$result[nom] $result[adresse]</option>";
-					}
-
-							?>				   
-				</select>
-				</p>
-				<?php
-				echo "<div id=$result[adresse] style='display:block'>";
-				echo"<p><label for='membre'>Choisissez le karateka </label><br />";
-				echo"<select name='membre' id='membre' required>";
-
-				
-					$querystring = "SELECT K.identifiant AS identifiant, K.nom AS nom, K.prenom AS prenom
-					FROM projet_karate.pratiquant K
-					WHERE K.adresseclub='$result[adresse]'
-					ORDER BY K.nom, K.prenom;"; 
-					$query = pg_query($idConnexion, $querystring);
-					$i=0;
-					while($result = pg_fetch_array($query))
-					{
-						echo"<option value='club$i'>$result[nom] $result[adresse]</option>";
-						$i=$i+1;
-					}
-
-							?>				   
+            <table border="0" cellspacing="3" cellpadding="0">
+				<tr><td>formulaire création</td></tr>
+			</table>
+				<form method = "GET" action="competition_ajout_res.php">
+				<p><label for="nom">Nom :</label><br />
+				<input type = "text" name = "nom" id="nom" required></p>
+				<p><label for="date">Date :</label><br />
+				<input type = "text" name = "date" id="date" required></p>
+				<p><label for="lieu">Lieu :</label><br />
+				<input type = "text" name = "lieu" id="lieu"></p>
+				<p><label for="site">Site Web :</label><br />
+				<input type = "text" name = "site" id="site" required></p> <!--s'il est nul il n'est plus unique.... dommage pour la contrainte-->
+				<p><label for="mail">Mail :</label><br />
+				<input type = "text" name = "mail" id="mail"></p>
+				<p><label for="materiau">Nom Du Materiau :</label><br />
+				<input type = "text" name = "materiau" id="materiau"></p>
+				<p>
+				<label for="type">De quel type de Compétition s'agit-il ?</label><br />
+				<select name="type" id="type" required>
+					<option value="CompetitionKata">Kata</option>
+				   <option value="CompetitionKumite">Kumite</option>
+				   <option value="CompetitionTameshiWari">Tameshi Wari</option>
+				   <option value="CompetitionMixte">Mixte</option>
 				</select>
 				</p>
 				<input type = "submit">
 				</form>
 			
           </div>
-	
-<?php
-}
-?>
-<a href= "match.php"> Mettre à jour les matchs </a> <br>
-
-
-
-<?php
-pg_close($idConnexion); //on ferme la connexion à notre base de donnée
-?>
-
-<a href= "accueil.php"> Retour à l'accueil</a> 
-</form>
-</BODY>
-</HTML>
+          <div id="2" style="display:none">
+            <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire modification</td></tr></table>
+				<form method = "GET" action="competition_modif.php">
+				<?php
+				echo '<p> <label for="type">Veuillez choisir la competition que vous voulez modifier : </label><br />
+				<select name="type" id="type"></p>';
+				$querystring = "SELECT nom, date
+								FROM projet_karate.competition";
+				//créer la requête qui permet de récupérer les compétitions déjà créées
+				$query = pg_query($idConnexion, $querystring);
+				$i=0;
+				while($result = pg_fetch_array($query))
+				{
+					$i++;
+					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
+					echo"<option value=$result[nom]>$result[nom]</option>";
+				}				
+				
+				echo'</select>
+				</p>'
+				?>
+				<input type = "submit">
+				</form>
+		  </div>
+          <div id="3" style="display:none">
+            <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire suppression</td></tr></table>
+			<form method = "GET" action="competition_supp_res.php">
+				<?php
+				echo '<p> <label for="type">Veuillez choisir la competition que vous voulez supprimer : </label><br />
+				<select name="compet_supp" id="type"></p>';
+				$querystring = "SELECT nom, date 
+								FROM projet_karate.competition";
+				//créer la requête qui permet de récupérer les compétitions déjà créées
+				$query = pg_query($idConnexion, $querystring);
+				$i=0;
+				while($result = pg_fetch_array($query))
+				{
+					$i++;
+					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
+					echo"<option value=$result[nom]>$result[nom]</option>";
+				}				
+				echo'</select>
+				</p>'
+				?>   
+				<input type = "submit">
+			</form>				
+		  </div>
+          <div id="4" style="display:none">
+            <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire rechercher</td></tr></table>
+				<form method = "GET" action="competition_rech_res.php">
+				<?php
+				echo '<p> <label for="nomCompet">Veuillez choisir la competition que vous souhaitez consulter : </label><br />
+				<select name="type" id="type"></p>';
+				$querystring = "SELECT nom, date 
+								FROM projet_karate.competition";
+				//créer la requête qui permet de récupérer les compétitions déjà créées
+				$query = pg_query($idConnexion, $querystring);
+				$i=0;
+				while($result = pg_fetch_array($query))
+				{
+					$i++;
+					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
+					echo"<option value=$result[nom]>$result[nom]</option>";
+				}				
+				echo'</select>
+				</p>'
+				?>   
+				<input type = "submit">
+			</form>	          
+		  </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
