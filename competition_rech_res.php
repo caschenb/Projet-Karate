@@ -16,6 +16,19 @@
       }
     </script>
 
+     <script type="text/javascript">
+      function atsel(sel) {
+        //if (sel.value=="-1" ) return;
+        var opt=sel.getElementsByTagName("option" );
+        for (var i=0; i<opt.length; i++) {
+          var x=document.getElementById(opt[i].value);
+          if (x) x.style.display="none";
+        }
+        var cat = document.getElementById(sel.value);
+        if (cat) cat.style.display="block";
+      }
+    </script>
+
 </head>
 <?php
 mb_internal_encoding("UTF-8");
@@ -24,6 +37,7 @@ include ("ajout.php");
 $idConnexion=fconnect();
 
 $nom = $_GET['type']; 
+//$nom = "Thecompet"; //à enlever lorsque competition finie
 
 $querystring = "SELECT * FROM projet_karate.competition WHERE  projet_karate.competition.nom='$nom'";
 		$query = pg_query($idConnexion, $querystring);
@@ -59,6 +73,7 @@ $querystring = "SELECT P.nom, P.prenom
 <?php
 	echo "<br>";
 	$nom = $_GET['type'];
+	//$nom = "Competition1"; //à enlever aussi
 	$req_date= "SELECT C.Date AS date
 				FROM Projet_Karate.Competition C
 				WHERE C.Nom= '$nom';"; //On récupère la date du match
@@ -117,7 +132,7 @@ echo"</table>";
       </tr>
       <tr>
         <td colspan="2">
-          <div id="1" style="display:block">
+          
 				<form method = "GET" action="competition_insert_res.php">
 				<p><label for="club">Choisissez le club </label><br />
 				<select name="club" onchange="catsel(this)" id="club" required>
@@ -136,30 +151,37 @@ echo"</table>";
 				</select>
 				</p>
 				<?php
-				echo "<div id=$result[adresse] style='display:block'>";
+					$querystring = "SELECT C.nom AS nom, C.adresse AS adresse
+					FROM projet_karate.club C
+					ORDER BY C.nom;"; 
+					$query = pg_query($idConnexion, $querystring);
+					while($result = pg_fetch_array($query)){
+
+				echo "<div id='$result[adresse]' style='display:block'>";
 				echo"<p><label for='membre'>Choisissez le karateka </label><br />";
 				echo"<select name='membre' id='membre' required>";
 
 				
 					$querystring = "SELECT K.identifiant AS identifiant, K.nom AS nom, K.prenom AS prenom
 					FROM projet_karate.pratiquant K
-					WHERE K.adresseclub='$result[adresse]'
+					WHERE K.adresseclub='$result[adresse]' AND K.nomclub='$result[nom]'
 					ORDER BY K.nom, K.prenom;"; 
 					$query = pg_query($idConnexion, $querystring);
 					$i=0;
 					while($result = pg_fetch_array($query))
 					{
-						echo"<option value='club$i'>$result[nom] $result[adresse]</option>";
+						echo"<option value='club$i'>$result[identifiant] $result[nom] $result[prenom]</option>";
 						$i=$i+1;
 					}
 
-							?>				   
+						}	?>				   
 				</select>
 				</p>
-				<input type = "submit">
+					<input type = "submit">
 				</form>
-			
-          </div>
+		</div>		
+        </table>
+
 	
 <?php
 }
