@@ -94,7 +94,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value=$result[nom]>$result[nom]</option>";
+					echo"<option value=$result[nom]>$result[nom] - $result[date]</option>";
 				}				
 				
 				echo'</select>
@@ -118,7 +118,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value=$result[nom]>$result[nom]</option>";
+					echo"<option value=$result[nom]>$result[nom] - $result[date]</option>";
 				}				
 				echo'</select>
 				</p>'
@@ -141,7 +141,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value=$result[nom]>$result[nom]</option>";
+					echo"<option value=$result[nom]>$result[nom] - $result[date]</option>";
 				}				
 				echo'</select>
 				</p>'
