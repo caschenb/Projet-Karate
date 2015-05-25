@@ -49,7 +49,7 @@
 				<p><label for="nom">Nom :</label><br />
 				<input type = "text" name = "nom" id="nom" required></p>
 				<p><label for="date">Date :</label><br />
-				<input type = "text" name = "date" id="date" required></p>
+				<input type = "date" name = "date" id="date" required></p>
 				<p><label for="lieu">Lieu :</label><br />
 				<input type = "text" name = "lieu" id="lieu"></p>
 				<p><label for="site">Site Web :</label><br />
