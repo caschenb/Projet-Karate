@@ -6,13 +6,13 @@ mb_internal_encoding("UTF-8");
 include("competition.php");
 include("ajout.php");
 $idConnexion=fconnect();
-$nom = $_GET['nom']; 
-$date = $_GET['date'];
-$lieu = $_GET['lieu'];
-$site = $_GET['site'];  
-$mail = $_GET['mail'];
-$materiau = $_GET['materiau'];
-$type = $_GET['type'];
+$nom = $_POST['nom']; 
+$date = $_POST['date'];
+$lieu = $_POST['lieu'];
+$site = $_POST['site'];  
+$mail = $_POST['mail'];
+$materiau = $_POST['materiau'];
+$type = $_POST['type'];
 
 
 	if(fajout($idConnexion,$nom,$date,$lieu,$site, $mail, $materiau, $type)) echo "Ajout réussi !";
@@ -23,7 +23,7 @@ $type = $_GET['type'];
 pg_close($idConnexion); //on ferme la connexion à notre base de donnée
 ?>
 
-<a href= "accueil.php"> Retour à l'accueil</a> 
+<a href= "accueil.html"> Retour à l'accueil</a> 
 </form>
 </BODY>
 </HTML>
