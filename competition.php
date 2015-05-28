@@ -45,11 +45,12 @@
             <table border="0" cellspacing="3" cellpadding="0">
 				<tr><td>formulaire création</td></tr>
 			</table>
-				<form method = "GET" action="competition_ajout_res.php">
+				<form method = "POST" action="competition_ajout_res.php">
 				<p><label for="nom">Nom :</label><br />
 				<input type = "text" name = "nom" id="nom" required></p>
 				<p><label for="date">Date :</label><br />
 				<input type = "date" name = "date" id="date" required></p>
+				<!--autre type possible : datetime ou time mais voir pk datetime ne marche pas!-->
 				<p><label for="lieu">Lieu :</label><br />
 				<input type = "text" name = "lieu" id="lieu"></p>
 				<p><label for="site">Site Web :</label><br />
@@ -81,7 +82,7 @@
           </div>
           <div id="2" style="display:none">
             <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire modification</td></tr></table>
-				<form method = "GET" action="competition_modif.php">
+				<form method = "POST" action="competition_modif.php">
 				<?php
 				echo '<p> <label for="type">Veuillez choisir la competition que vous voulez modifier : </label><br />
 				<select name="type" id="type"></p>';
@@ -94,7 +95,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value=$result[nom]>$result[nom] - $result[date]</option>";
+					echo"<option value='$result[nom]'>$result[nom] - $result[date]</option>";
 				}				
 				
 				echo'</select>
@@ -105,7 +106,7 @@
 		  </div>
           <div id="3" style="display:none">
             <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire suppression</td></tr></table>
-			<form method = "GET" action="competition_supp_res.php">
+			<form method = "POST" action="competition_supp_res.php">
 				<?php
 				echo '<p> <label for="type">Veuillez choisir la competition que vous voulez supprimer : </label><br />
 				<select name="compet_supp" id="type"></p>';
@@ -118,7 +119,7 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value=$result[nom]>$result[nom] - $result[date]</option>";
+					echo"<option value='$result[nom]'>$result[nom] - $result[date]</option>";
 				}				
 				echo'</select>
 				</p>'
@@ -128,7 +129,7 @@
 		  </div>
           <div id="4" style="display:none">
             <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire rechercher</td></tr></table>
-				<form method = "GET" action="competition_rech_res.php">
+				<form method = "POST" action="competition_rech_res.php">
 				<?php
 				echo '<p> <label for="nomCompet">Veuillez choisir la competition que vous souhaitez consulter : </label><br />
 				<select name="type" id="type"></p>';
@@ -141,16 +142,19 @@
 				{
 					$i++;
 					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					echo"<option value=$result[nom]>$result[nom] - $result[date]</option>";
+					echo"<option value='$result[nom]'>$result[nom] - $result[date]</option>";
 				}				
 				echo'</select>
 				</p>'
 				?>   
 				<input type = "submit">
+				
 			</form>	          
 		  </div>
         </td>
       </tr>
     </table>
+	<br/>
+				<a href= "accueil.html"> Retour à l'accueil</a> 
   </body>
 </html>
