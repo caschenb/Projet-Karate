@@ -6,7 +6,7 @@ include("connect.php");
 include ("ajout.php");
 $idConnexion=fconnect();
 
-$nom = $_GET['compet_supp']; 
+$nom = $_POST['compet_supp']; 
 
 
 $querystring = "DELETE FROM projet_karate.competition WHERE  projet_karate.competition.nom='$nom'";
