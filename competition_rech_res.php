@@ -21,9 +21,16 @@
 		mb_internal_encoding("UTF-8");
 		include("connect.php");
 		include ("ajout.php");
+		date_default_timezone_set('Europe/Paris');
 		$idConnexion=fconnect();
-		$nom = $_GET['type']; 
+		$nom = $_POST["type"]; 
 		//$nom = "Thecompet"; //à enlever lorsque competition finie
+		$req_materiau= "SELECT C.nommateriau AS materiau
+					FROM Projet_Karate.Competition C
+					WHERE C.Nom= '$nom';"; //On récupère le materiau du match
+		$query=pg_query($idConnexion,$req_materiau);
+		$res=pg_fetch_array($query);
+		$materiau= $res['materiau'];
 
 		$querystring = "SELECT * FROM projet_karate.competition WHERE  projet_karate.competition.nom='$nom'";
 		$query = pg_query($idConnexion, $querystring);
@@ -39,10 +46,10 @@
 		Lieu : $result[lieu]<br>
 		Site web : $result[siteweb]<br>
 		Mail : $result[mail]<br>
-		Matériau : $result[nommateriau]<br>
-		Type : $result[type] <br><br>";
+		Type : $result[type] <br>";
+		if($materiau!=NULL){
+		echo"Matériau : $result[nommateriau]<br><br>";}
 	?>
-	<a href= "competition_inscr.php"> S'inscrire à cette compétition </a> <br>
 
 	<h2>Liste des participants</h2>
 	<!--Requete pour avoir la liste des participants
@@ -58,7 +65,7 @@
 
 	<?php
 		echo "<br>";
-		$nom = $_GET['type'];
+		$nom = $_POST['type'];
 		$req_date= "SELECT C.Date AS date
 					FROM Projet_Karate.Competition C
 					WHERE C.Nom= '$nom';"; //On récupère la date du match
@@ -94,14 +101,17 @@
 				echo "</tr>";
 			}
 
-		echo"</table>";
+		echo"</table>
 
+		<a href= 'match.php'> Mettre à jour les matchs </a> <br>";
 
 		echo "<h2>Classement</h2>";
 		}
 
 		else{
 	?>
+	<br>
+	<h2>Gestion des Inscriptions</h2>
 	<table>
       <tr>
         <td>
@@ -117,7 +127,7 @@
       <tr>
         <td colspan="2">
           <div id="1" style="display:display">
-				<form method = "GET" action="competition_insert_res.php">
+				<form method = "POST" action="competition_insert_res.php">
 					<p>
 						<label for="club">Choisissez le club </label><br />
 						<select name="club" onchange="catsel(this)" id="club" required>
@@ -167,7 +177,7 @@
 				</form>
 			</div>
 			<div id="2" style="display:none">
-				<form method = "GET" action="competition_insert_res.php">
+				<form method = "POST" action="competition_insert_res.php">
 					<p>
 						<label for="club">Choisissez le club </label><br />
 						<select name="club" onchange="catsel(this)" id="club" required>
@@ -234,7 +244,6 @@
 <?php
 }
 ?>
-<a href= "match.php"> Mettre à jour les matchs </a> <br>
 
 
 
@@ -242,7 +251,7 @@
 pg_close($idConnexion); //on ferme la connexion à notre base de donnée
 ?>
 
-<a href= "accueil.php"> Retour à l'accueil</a> 
+<a href= "competition.php"> Retour à l'accueil</a> 
 </form>
 </BODY>
 </HTML>
