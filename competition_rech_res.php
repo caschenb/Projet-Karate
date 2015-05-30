@@ -20,7 +20,6 @@
 	<?php
 		mb_internal_encoding("UTF-8");
 		include("connect.php");
-		include ("ajout.php");
 		date_default_timezone_set('Europe/Paris');
 		$idConnexion=fconnect();
 		$nom = $_POST["nom"]; 
@@ -148,7 +147,7 @@
 				<form method = "POST" action="competition_insert_res.php">
 					<p>
 						<label for="club">Choisissez le club </label><br />
-						<select name="club" onchange="catsel(this)" id="club" required>
+						<select name="ins" onchange="catsel(this)" id="club">
 
 							<?php
 								$z=3;
@@ -177,7 +176,7 @@
 
 							echo "<div id='$z' style='display:none'>";
 							echo"<p><label for='membre'>Choisissez le karateka </label><br />";
-							echo"<select name='membre$j' id='membre$j' required>";
+							echo"<select name='membre' id='membre'>";
 							$j=$j+1;
 							$z=$z+1;
 
@@ -192,18 +191,19 @@
 													)
 											ORDER BY K.nom, K.prenom;"; 
 							$requete = pg_query($idConnexion, $pratiquant);
-							$i=0;
 							while($res = pg_fetch_array($requete))
 							{
-								echo"<option value='club$i'>$res[identifiant] $res[nom] $res[prenom]</option>";
-								$i=$i+1;
+								echo"<option value='$res[identifiant]'>$res[identifiant] $res[nom] $res[prenom]</option>";
 							}
 							echo"</select>";
 							echo"</p>";
 							echo"</div>";
 
-						}	
-					?>				   
+						}
+						echo("<INPUT TYPE='hidden' NAME='nomC' VALUE='$nom'>");
+								echo("<INPUT TYPE='hidden' NAME='dateC' VALUE='$date1'>");	
+					?>			
+					<input type = "submit" value="envoyer">	   
 				</form>
 			</div>
 
@@ -211,7 +211,7 @@
 				<form method = "POST" action="competition_insert_res.php">
 					<p>
 						<label for="club">Choisissez le club </label><br />
-						<select name="club" onchange="catsel(this)" id="club" required>
+						<select name="desc" onchange="catsel(this)" id="club">
 
 							<?php
 								$querystring = "SELECT C.nom AS nom, C.adresse AS adresse
@@ -237,7 +237,7 @@
 
 							echo "<div id='$result[adresse]' style='display:none'>";
 							echo"<p><label for='membre'>Choisissez le karateka </label><br />";
-							echo"<select name='membre$j' id='membre$j' required>";
+							echo"<select name='membre' id='membre'>";
 							$j=$j+1;
 
 				
@@ -246,21 +246,22 @@
 										   WHERE  P.nomcompet='$nom' AND P.date='$date1' AND P.idpratiquant=Pra.identifiant AND Pra.adresseclub='$result[adresse]' AND Pra.nomclub='$result[nom]'
 										   ORDER BY Pra.nom, Pra.prenom;"; 
 							$requete = pg_query($idConnexion, $pratiquant);
-							$i=0;
 							while($res = pg_fetch_array($requete))
 							{
-								echo"<option value='club$i'>$res[id] $res[nom] $res[prenom]</option>";
-								$i=$i+1;
+								echo"<option value='$res[id]'>$res[id] $res[nom] $res[prenom]</option>";
 							}
 							echo"</select>";
 							echo"</p>";
 							echo"</div>";
 
 						}	
-					?>				   
+						echo("<INPUT TYPE='hidden' NAME='nomC' VALUE='$nom'>");
+								echo("<INPUT TYPE='hidden' NAME='dateC' VALUE='$date1'>");
+					?>		
+					<input type = "submit">		   
 				</form>
 			</div>
-					<input type = "submit">
+					
 				
 		
 		</td>
@@ -279,6 +280,5 @@ pg_close($idConnexion); //on ferme la connexion à notre base de donnée
 ?>
 
 <a href= "competition.php"> Retour à l'accueil</a> 
-</form>
 </BODY>
 </HTML>
