@@ -23,7 +23,8 @@
 		include ("ajout.php");
 		date_default_timezone_set('Europe/Paris');
 		$idConnexion=fconnect();
-		$nom = $_POST["type"]; 
+		$nom = $_POST["nom"]; 
+		$date = $_POST["date"]; 
 		//$nom = "Thecompet"; //à enlever lorsque competition finie
 		$req_materiau= "SELECT C.nommateriau AS materiau
 					FROM Projet_Karate.Competition C
@@ -32,15 +33,13 @@
 		$res=pg_fetch_array($query);
 		$materiau= $res['materiau'];
 
-		$querystring = "SELECT * FROM projet_karate.competition WHERE  projet_karate.competition.nom='$nom'";
+		$querystring = "SELECT * FROM projet_karate.competition WHERE  projet_karate.competition.nom='$nom' AND projet_karate.competition.date='$date'";
 		$query = pg_query($idConnexion, $querystring);
 		$result=pg_fetch_array($query);
 	?>
-	<h1>Information sur la compétition
+	<h1>Information sur la compétition : 
 	<?php
 		echo" $result[nom] </h1> 
-
-		<br>
 
 		Date : $result[date] <br>
 		Lieu : $result[lieu]<br>
@@ -52,26 +51,40 @@
 	?>
 
 	<h2>Liste des participants</h2>
-	<!--Requete pour avoir la liste des participants
+	<table border="1">
+		<tr>
+			<td width="100pt"><b>Identifiant</b></td>
+			<td width="100pt"><b>Nom</b></td>
+			<td width="100pt"><b>Prénom</b></td>
+			<td width="100pt"><b>Poids</b></td>
+			<td width="100pt"><b>Club</b></td>
+		</tr>
+	
 	<?php
-	$querystring = "SELECT P.nom, P.prenom 
-					FROM projet_karate.pratiquant P,projet_karate.competition C, projet_karate.match M 
-					WHERE  M.nomcompetition='$nom' AND M.datecompetition=$result[date] AND "; //manque lien pratiquant à competition ou à match.
-
-
-	?>
-	-->
+	//Requete pour avoir la liste des participants
+	$querystring = "SELECT Pra.identifiant AS id,Pra.nom AS nom, Pra.prenom AS prenom, Pra.poids AS poids, Pra.nomclub AS nomclub
+					FROM projet_karate.participant P, projet_karate.pratiquant Pra
+					WHERE  P.nomcompet='$nom' AND P.date='$date' AND P.idpratiquant=Pra.identifiant;"; 
+	$vQuery = pg_query($idConnexion,$querystring);
+  while ($vResult = pg_fetch_array($vQuery)){
+	echo "<tr>";
+	echo "<td> $vResult[id] </td>";
+	echo "<td> $vResult[nom] </td>";
+	echo "<td> $vResult[prenom] </td>";
+	echo "<td> $vResult[poids] </td>";
+	echo "<td> $vResult[nomclub] </td>";
+	echo "</tr>";
+}
+?> 
+</table>
+	
 	<br>
 
 	<?php
 		echo "<br>";
-		$nom = $_POST['type'];
-		$req_date= "SELECT C.Date AS date
-					FROM Projet_Karate.Competition C
-					WHERE C.Nom= '$nom';"; //On récupère la date du match
-		$query=pg_query($idConnexion,$req_date);
-		$res=pg_fetch_array($query);
-		$date= strtotime("$res[date]");
+		$nom = $_POST['nom'];
+		$date1 = $_POST['date'];
+		$date= strtotime("$date1");
 		$date_today = strtotime(date('Y-m-d H:i:s')); //On récupère la date d'aujourd'hui et on la convertie en nombre pour faciliter la comparaison
 		if($date<$date_today){ //On compare les 2 dates et on affiche les classements seulement si la date est passée.
 			echo "<h2>Liste des matchs</h2>";
@@ -83,21 +96,26 @@
 				echo"<td width='100pt'><b>Score2</b></td>";
 				echo"<td width='100pt'><b>Type</b></td>";
 				echo"<td width='100pt'><b>Kata</b></td>";
+				echo"<td width='100pt'><b>Participant 1</b></td>";
+				echo"<td width='100pt'><b>Participant 2</b></td>";
 			echo"</tr>";
 
-		$querystring = "SELECT M.numeromatch AS num, M.score1 AS s1,M.score2 AS s2,M.type AS type,M.kata AS kata
-						FROM projet_karate.match M 
-						WHERE  M.nomcompetition='$nom';"; 
+		$querystring = "SELECT M.numeromatch AS num, M.score1 AS s1,M.score2 AS s2,M.type AS type,M.kata AS kata, M.participant1 AS id1, M.participant2 AS id2,P1.nom AS nom1, P2.nom AS nom2, P1.prenom AS prenom1,P2.prenom AS prenom2
+						FROM projet_karate.match M, projet_karate.pratiquant P1, projet_karate.pratiquant P2
+						WHERE  M.nomcompetition='$nom' AND M.datecompetition='$date1' AND M.participant1=P1.identifiant AND M.participant2=P2.identifiant
+						ORDER BY M.numeromatch;"; 
 		$query = pg_query($idConnexion, $querystring);
 		$i=0;
 		while($result = pg_fetch_array($query))
 			{
 				echo "<tr>";
-					echo "<td> $Result[num] </td>";
-					echo "<td> $Result[s1] </td>";
-					echo "<td> $Result[s2] </td>";
-					echo "<td> $Result[type] </td>";
-					echo "<td> $Result[kata] </td>";
+					echo "<td> $result[num] </td>";
+					echo "<td> $result[s1] </td>";
+					echo "<td> $result[s2] </td>";
+					echo "<td> $result[type] </td>";
+					echo "<td> $result[kata] </td>";
+					echo "<td> $result[prenom1] $result[nom1] ($result[id1])</td>";
+					echo "<td> $result[prenom2] $result[nom2] ($result[id2])</td>";
 				echo "</tr>";
 			}
 
@@ -120,7 +138,7 @@
         <td>
           <select name="choice" onchange="catsel(this)">
             <option value="1">Inscription</option>
-            <option value="2">Description</option>
+            <option value="2">Desinscription</option>
           </select>
         </td>
       </tr>
@@ -133,13 +151,16 @@
 						<select name="club" onchange="catsel(this)" id="club" required>
 
 							<?php
+								$z=3;
 								$querystring = "SELECT C.nom AS nom, C.adresse AS adresse
 												FROM projet_karate.club C
 												ORDER BY C.nom;"; 
 								$query = pg_query($idConnexion, $querystring);
+								echo"<option value='0'> -----Choisissez un club--------</option>";
 								while($result = pg_fetch_array($query))
 								{
-									echo"<option value='$result[adresse]'>$result[nom] $result[adresse]</option>";
+									echo"<option value='$z'>$result[nom] $result[adresse]</option>";
+									$z=$z+1;
 								}
 
 										?>				   
@@ -150,32 +171,42 @@
 										FROM projet_karate.club C
 										ORDER BY C.nom;"; 
 						$query = pg_query($idConnexion, $querystring);
+						$j=0;
+						$z=3;
 						while($result = pg_fetch_array($query)){
 
-							echo "<div id='$result[adresse]' style='display:block'>";
+							echo "<div id='$z' style='display:none'>";
 							echo"<p><label for='membre'>Choisissez le karateka </label><br />";
-							echo"<select name='membre' id='membre' required>";
+							echo"<select name='membre$j' id='membre$j' required>";
+							$j=$j+1;
+							$z=$z+1;
 
 				
-							$querystring = "SELECT K.identifiant AS identifiant, K.nom AS nom, K.prenom AS prenom
+							$pratiquant = "SELECT K.identifiant AS identifiant, K.nom AS nom, K.prenom AS prenom
 											FROM projet_karate.pratiquant K
-											WHERE K.adresseclub='$result[adresse]' AND K.nomclub='$result[nom]'
+											WHERE K.adresseclub='$result[adresse]' AND K.nomclub='$result[nom]' AND K.identifiant NOT IN
+												(
+												   SELECT K.identifiant
+												   FROM projet_karate.participant P, projet_karate.pratiquant K
+												   WHERE  P.nomcompet='$nom' AND P.date='$date1' AND P.idpratiquant=K.identifiant AND K.adresseclub='$result[adresse]' AND K.nomclub='$result[nom]'
+													)
 											ORDER BY K.nom, K.prenom;"; 
-							$query = pg_query($idConnexion, $querystring);
+							$requete = pg_query($idConnexion, $pratiquant);
 							$i=0;
-							while($result = pg_fetch_array($query))
+							while($res = pg_fetch_array($requete))
 							{
-								echo"<option value='club$i'>$result[identifiant] $result[nom] $result[prenom]</option>";
+								echo"<option value='club$i'>$res[identifiant] $res[nom] $res[prenom]</option>";
 								$i=$i+1;
 							}
+							echo"</select>";
+							echo"</p>";
+							echo"</div>";
 
 						}	
 					?>				   
-					</select>
-					</p>
-					</div>
 				</form>
 			</div>
+
 			<div id="2" style="display:none">
 				<form method = "POST" action="competition_insert_res.php">
 					<p>
@@ -187,6 +218,7 @@
 												FROM projet_karate.club C
 												ORDER BY C.nom;"; 
 								$query = pg_query($idConnexion, $querystring);
+								echo"<option value='0'> -----Choisissez un club--------</option>";
 								while($result = pg_fetch_array($query))
 								{
 									echo"<option value='$result[adresse]'>$result[nom] $result[adresse]</option>";
@@ -200,37 +232,32 @@
 										FROM projet_karate.club C
 										ORDER BY C.nom;"; 
 						$query = pg_query($idConnexion, $querystring);
+						$j=0;
 						while($result = pg_fetch_array($query)){
 
-							echo "<div id='$result[adresse]' style='display:block'>";
+							echo "<div id='$result[adresse]' style='display:none'>";
 							echo"<p><label for='membre'>Choisissez le karateka </label><br />";
-							echo"<select name='membre' id='membre' required>";
+							echo"<select name='membre$j' id='membre$j' required>";
+							$j=$j+1;
 
 				
-							$querystring = "SELECT K.identifiant AS identifiant, K.nom AS nom, K.prenom AS prenom
-											FROM projet_karate.pratiquant K
-											WHERE K.adresseclub='$result[adresse]' AND K.nomclub='$result[nom]' AND (K.identifiant=
-												(SELECT M.Participant1 AS Participant1
-												FROM projet_karate.match M
-												WHERE M.nomcompetition='$nom' AND M.datecompetition='$date')
-											OR K.identifiant=(
-													SELECT M.Participant2 AS Participant2
-													FROM projet_karate.match M
-													WHERE M.nomcompetition='$nom' AND M.datecompetition='$date'))
-											ORDER BY K.nom, K.prenom;"; 
-							$query = pg_query($idConnexion, $querystring);
+							$pratiquant = "SELECT Pra.identifiant AS id,Pra.nom AS nom, Pra.prenom AS prenom
+										   FROM projet_karate.participant P, projet_karate.pratiquant Pra
+										   WHERE  P.nomcompet='$nom' AND P.date='$date1' AND P.idpratiquant=Pra.identifiant AND Pra.adresseclub='$result[adresse]' AND Pra.nomclub='$result[nom]'
+										   ORDER BY Pra.nom, Pra.prenom;"; 
+							$requete = pg_query($idConnexion, $pratiquant);
 							$i=0;
-							while($result = pg_fetch_array($query))
+							while($res = pg_fetch_array($requete))
 							{
-								echo"<option value='club$i'>$result[identifiant] $result[nom] $result[prenom]</option>";
+								echo"<option value='club$i'>$res[id] $res[nom] $res[prenom]</option>";
 								$i=$i+1;
 							}
+							echo"</select>";
+							echo"</p>";
+							echo"</div>";
 
 						}	
 					?>				   
-					</select>
-					</p>
-					</div>
 				</form>
 			</div>
 					<input type = "submit">
