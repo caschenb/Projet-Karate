@@ -191,13 +191,13 @@
 										FROM projet_karate.club C
 										ORDER BY C.nom;"; 
 						$query = pg_query($idConnexion, $querystring);
-						$j=0;
 						$z=3;
+						$j=0;
 						while($result = pg_fetch_array($query)){
 
 							echo "<div id='$z' style='display:none'>";
-							echo"<p><label for='membre'>Choisissez le karateka </label><br />";
-							echo"<select name='membre' id='membre'>";
+							echo"<p><label for='membre$j'>Choisissez le karateka </label><br />";
+							echo"<select name='membre$j' id='membre$j'>";
 							$j=$j+1;
 							$z=$z+1;
 
@@ -257,8 +257,8 @@
 						while($result = pg_fetch_array($query)){
 
 							echo "<div id='$result[adresse]' style='display:none'>";
-							echo"<p><label for='membre'>Choisissez le karateka </label><br />";
-							echo"<select name='membre' id='membre'>";
+							echo"<p><label for='membre$j'>Choisissez le karateka </label><br />";
+							echo"<select name='membre$j' id='membre$j'>";
 							$j=$j+1;
 
 				
