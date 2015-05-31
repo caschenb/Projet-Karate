@@ -1,4 +1,3 @@
-
 <HTML>
 <head>
     <title>Mise à jour effectuée </title>
@@ -13,7 +12,19 @@
 		$date=$_POST["dateC"];
 
 		if (!empty($_POST["ins"])){
-			$id=$_POST["membre"];
+			$querystring = "SELECT C.nom AS nom, C.adresse AS adresse
+										FROM projet_karate.club C
+										ORDER BY C.nom;"; 
+		$query = pg_query($idConnexion, $querystring);
+		$i=0;
+		$j=3;
+		while($res=pg_fetch_array($query)){
+			if($_POST["ins"]==$j){
+			 $id=$_POST["membre$i"];
+			}
+			$i=$i+1;
+			$j=$j+1;
+		}
 			$querystring="INSERT INTO projet_karate.participant VALUES ('$nom','$date','$id');";
 			$query=pg_query($idConnexion,$querystring);
 			$querystring="SELECT P.prenom, P.nom
@@ -24,7 +35,20 @@
 			echo("$id $res[nom] $res[prenom] a bien été ajouté à la compétition $nom se déroulant le $date");
 		}
 		else{
-			$id=$_POST["membre"];
+
+		$querystring = "SELECT C.nom AS nom, C.adresse AS adresse
+										FROM projet_karate.club C
+										ORDER BY C.nom;"; 
+		$query = pg_query($idConnexion, $querystring);
+		$i=0;
+
+		while($res=pg_fetch_array($query)){
+			if(!strcmp($_POST["desc"],$res['adresse'])){
+			 $id=$_POST["membre$i"];
+			}
+			$i=$i+1;
+		}
+
 			$querystring="DELETE FROM projet_karate.participant WHERE projet_karate.participant.idpratiquant=$id;";
 			$query=pg_query($idConnexion,$querystring);
 			$querystring="SELECT P.prenom, P.nom
@@ -37,3 +61,4 @@
 	?>
 
 </body>
+</HTML>
