@@ -1,7 +1,5 @@
 <HTML>
-<?php
-$idr = isset($_POST['compet_rech'])?$_POST['compet_rech']:null;
-?>
+
   <head>
     <title>Competition</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -130,74 +128,56 @@ $idr = isset($_POST['compet_rech'])?$_POST['compet_rech']:null;
 				<input type = "submit">
 			</form>				
 		  </div>
+
           <div id="4" style="display:block">
-            <table border="0" cellspacing="3" cellpadding="0"><tr><td>formulaire rechercher</td></tr></table>
-			<!-- action du formulaire permet en gros de rafraichir la page, envoi les données sur la même page qui va recharger. Du coup j'ai 
-				été obligée de mettre la recherche dans le premier champ de la liste déroulante sinon ça rechargeait la page et par défaut
-				ça affichait le formulaire de création !-->
-				<form action="<?php echo($_SERVER['PHP_SELF']); ?>" method = "POST" id="cle_compet">
-				
-				<!-- On crée la liste déroulante, avec onchange, dès qu'on détecte un changement on envoie le résultat de notre formulaire !-->
-				<select name="compet_rech" id="compet_rech" onchange="document.forms['cle_compet'].submit();">;
-				
-				<!-- option qui s'affiche par défauut !-->
-				<option value="-1">- - - Choisissez une competition - - -</option>
+				<form action="competition_rech_res.php" method = "POST">
+					<p>
+				<label for="nomCompet">Veuillez choisir la competition que vous souhaitez consulter : </label><br />
+				<select name="compet_rech" id="compet_rech" onchange="catsel(this)">
 				<?php
-				echo '<p> <label for="nomCompet">Veuillez choisir la competition que vous souhaitez consulter : </label><br /></p>';
-				$querystring = "SELECT nom, date 
-								FROM projet_karate.competition";
-				//créer la requête qui permet de récupérer les compétitions déjà créées. On a plus besoin de la date maintenant mais je l'ai laissée au cas où on voudrait repartir en arrière 
-				//avec ce qu'on a déjà fait avant
+
 				
-				//on soumet la requête à la BDD
+				$querystring = "SELECT DISTINCT C.nom AS nom
+								FROM projet_karate.competition C
+								ORDER BY C.nom;";
 				$query = pg_query($idConnexion, $querystring);
-				
-				//on affiche les noms des competitions que nous a retournés la requête à la BDD
-				$i=0;
+				echo"<option value='-1'> - - - Choisissez une competition - - -</option>";
 				while($result = pg_fetch_array($query))
 				{
-					$i++;
-					//$nb = $result['nom']; // ici on stocke la projection sur nom du résultat de la ième ligne 
-					//echo"<option value=$result[nom]>$result[nom] - $result[date]</option>";
+					echo"<option value='$result[nom]'>$result[nom]</option>"; 
+				}			
+				?>	
+				</select>
+			</p>
+				<?php
+						$querystring = "SELECT DISTINCT C.nom AS nom
+										FROM projet_karate.competition C
+										ORDER BY C.nom;";  
+						$query = pg_query($idConnexion, $querystring);
+
+
+						$i=0;
+						while($result = pg_fetch_array($query)){
+							echo "<div id='$result[nom]' style='display:none'>";
+							echo"<p><label for='date$i'>Choisissez la date </label><br />";
+							echo"<select name='date$i' id='date$i'>";
+							$i=$i+1;
+
+				
+							$sql2 = "SELECT C.date AS dat
+									 FROM projet_karate.competition C
+				 					 WHERE C.nom ='$result[nom]';"; 
+				 			$requete = pg_query($idConnexion, $sql2);
+							while($res = pg_fetch_array($requete))
+							{
+								echo"<option value='$res[dat]'>$res[dat]</option>";
+							}
+							echo"</select>";
+							echo"</p>";
+							echo"</div>";
+
+}
 					?>
-					<option value="<?php echo($result['nom']); ?>"<?php echo((isset($idr) && $idr == $result['nom'])?" selected=\"selected\"":null); ?>><?php echo($result['nom']); ?></option> 
-					<?php
-				}				
-				echo'</select></p>';
-				
-				/* On commence par vérifier si on a envoyé un numéro de competition en sélectionnant un des noms de la liste déroulante (stocké dans $idr) et le cas échéant s'il est différent de -1 (valeur par défaut) */
-				if(isset($idr) && $idr != -1) 
-				{ 
-				?>
-				
-				<!-- On ferme le 1er formulaire !-->
-				</form>	 
-				
-				<!-- on recrée un formulaire qui ce coup-ci va envoyer le résultat au fichier competition_rech_res.php !-->
-				<form method = "POST" action="competition_rech_res.php">
-				<?php
-				
-				//C'est là que se trouve le gros bidouillage, je savais pas comment envoyer le $idr sans recréer un champ... mais il faudrait pas que l'utilisateur le modifie...
-				echo"<input type = 'text' name = 'nom' value='$idr'  id='nom'></p>";
-				
-				/* Création de la requête pour avoir les dates de cette compet */ 
-				$sql2 = "SELECT date 
-				 FROM projet_karate.competition 
-				 WHERE nom = ".$idr.";"; 
-				 $query = pg_query($idConnexion, $querystring);
-				$i=0;
-				?>
-				<select name="compet_rech_date" id="compet_rech_date" >;
-				<?php
-				while($result = pg_fetch_array($query))
-				{
-					$i++;
-					//On affiche les dates disponibles pour les compétitions dont le nom est sélectionné.
-					echo"<option value=$result[date]>$result[date]</option>";
-				}				
-				echo'</select></p>';
-				}
-				?> 
 				<input type = "submit">
 			</form>	          
 		  </div>
