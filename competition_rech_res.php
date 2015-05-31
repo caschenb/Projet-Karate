@@ -17,14 +17,25 @@
     </script>
 
 </head>
+<body>
 	<?php
 		mb_internal_encoding("UTF-8");
 		include("connect.php");
 		date_default_timezone_set('Europe/Paris');
 		$idConnexion=fconnect();
-		$nom = $_POST["nom"]; 
-		$date = $_POST["date"]; 
-		//$nom = "Thecompet"; //à enlever lorsque competition finie
+		$nom = $_POST["compet_rech"];  
+		$querystring = "SELECT DISTINCT C.nom AS nom
+						FROM projet_karate.competition C
+						ORDER BY C.nom;"; 
+		$query = pg_query($idConnexion, $querystring);
+		$i=0;
+		while($res=pg_fetch_array($query)){
+			if(!strcmp($res['nom'],$nom)){
+			 $date = $_POST["date$i"];
+			}
+			$i=$i+1;
+		}
+		echo("coucou voici la compétition $nom du $date");
 		$req_materiau= "SELECT C.nommateriau AS materiau
 					FROM Projet_Karate.Competition C
 					WHERE C.Nom= '$nom';"; //On récupère le materiau du match
@@ -81,8 +92,18 @@
 
 	<?php
 		echo "<br>";
-		$nom = $_POST['nom'];
-		$date1 = $_POST['date'];
+		$nom = $_POST['compet_rech'];
+		$querystring = "SELECT DISTINCT C.nom AS nom
+						FROM projet_karate.competition C
+						ORDER BY C.nom;"; 
+		$query = pg_query($idConnexion, $querystring);
+		$i=0;
+		while($res=pg_fetch_array($query)){
+			if(!strcmp($res['nom'],$nom)){
+			 $date1 = $_POST["date$i"];
+			}
+			$i=$i+1;
+		}
 		$date= strtotime("$date1");
 		$date_today = strtotime(date('Y-m-d H:i:s')); //On récupère la date d'aujourd'hui et on la convertie en nombre pour faciliter la comparaison
 		if($date<$date_today){ //On compare les 2 dates et on affiche les classements seulement si la date est passée.
